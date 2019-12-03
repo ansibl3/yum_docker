@@ -1,0 +1,60 @@
+---
+- name: remove docker if already present
+  tags: docker
+  ignore_errors: yes
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+    state: absent
+
+- name: add docker dependencies
+  tags: docker
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+    state: present
+
+- name: Add docker repository
+  tags: docker
+  yum_repository:
+    name: dockerce
+    description: Docker CE Centos
+    baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: add docker packages
+  tags: docker
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+- name: make sure docker service is running
+  sudo: yes
+  service: name=docker state=started
+  tags: docker
+
+- name: install prereqs for docker-compose
+  tags: docker-compose
+  yum:
+    name:
+      - curl
+    state: present
+
+- name: install docker-compose
+  sudo: yes
+  shell: curl -L https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+
+- name: make it executable
+  sudo: yes
+  file: path=/usr/local/bin/docker-compose state=file mode=0755
+

@@ -1,0 +1,6 @@
+---
+- hosts: all
+  become-user: root
+  become-method: sudo
+  roles:
+    - { role: ./ }
