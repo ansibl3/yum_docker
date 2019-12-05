@@ -1,6 +1,7 @@
 ---
 - name: remove docker if already present
   tags: docker
+  become: yes
   ignore_errors: yes
   yum:
     name:
@@ -15,6 +16,7 @@
 
 - name: add docker dependencies
   tags: docker
+  become: yes
   yum:
     name:
       - yum-utils
@@ -24,13 +26,15 @@
 
 - name: Add docker repository
   tags: docker
+  become: yes
   yum_repository:
     name: dockerce
     description: Docker CE Centos
-    baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+    baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
 
 - name: add docker packages
   tags: docker
+  become: yes
   yum:
     name:
       - docker-ce
@@ -39,11 +43,12 @@
     state: present
 
 - name: make sure docker service is running
-  sudo: yes
+  become: yes
   service: name=docker state=started
   tags: docker
 
 - name: install prereqs for docker-compose
+  become: yes
   tags: docker-compose
   yum:
     name:
@@ -51,10 +56,10 @@
     state: present
 
 - name: install docker-compose
-  sudo: yes
+  become: yes
   shell: curl -L https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 
 - name: make it executable
-  sudo: yes
+  become: yes
   file: path=/usr/local/bin/docker-compose state=file mode=0755
 

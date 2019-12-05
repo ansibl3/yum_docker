@@ -1,6 +1,7 @@
 ---
 - hosts: all
-  become-user: root
-  become-method: sudo
+  become: true
+  become_user: root
+  become_method: sudo
   roles:
     - { role: ./ }
